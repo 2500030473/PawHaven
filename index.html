@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawHaven - Pet Adoption & Forever Homes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="nav-container">
+    <a class="brand" href="#home">🐾 Paw<span>Haven</span></a>
+    <nav class="nav-links">
+      <a href="#pets">Browse Pets</a>
+      <a href="#owner-area">Owner Dashboard</a>
+      <a href="#chats">Chat & Offers</a>
+    </nav>
+    <div class="nav-actions">
+      <span id="signedInLabel" class="small muted">Guest</span>
+      <button class="btn btn-primary" id="accountButton">Login / Signup</button>
+      <button class="btn btn-secondary hidden" id="logoutButton">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="home" class="hero">
+  <p>🐶 Find your soul companion</p>
+  <h1>Give a loving pet their
+    <span style="color:#d97706">forever home</span>.
+  </h1>
+  <p>Meet pets looking for caring families. Owners can list pets, answer questions and discuss a fair adoption fee with adopters.</p>
+  <a class="btn btn-warm" href="#pets">Browse available pets</a>
+</section>
+
+<section id="pets" class="container">
+  <div class="section-head">
+    <div>
+      <h2>Meet our pets</h2>
+      <p class="muted">Search, connect with the owner and make an offer.</p>
+    </div>
+    <strong id="petCount" class="muted"></strong>
+  </div>
+
+  <div class="search-row">
+    <input id="petSearchInput" placeholder="Search name, breed or species">
+    <select id="speciesFilter">
+      <option>All</option>
+      <option>Dogs</option>
+      <option>Cats</option>
+      <option>Birds</option>
+      <option>Rabbits</option>
+      <option>Fishes</option>
+      <option>Turtles</option>
+      <option>Hamsters</option>
+    </select>
+  </div>
+
+  <div id="petsGrid" class="pets-grid"></div>
+  <div id="noResults" class="empty hidden">No pets found. Try another search.</div>
+</section>
+
+<section id="adoption-form" class="container">
+  <h2>Adoption application</h2>
+  <p class="muted">Fill in your details after choosing a pet.</p>
+
+  <form id="adoptionApplicationForm" class="panel grid-2">
+    <input type="hidden" id="selectedPetId">
+
+    <div class="field">
+      <label for="applicantName">Full name *</label>
+      <input id="applicantName" required>
+    </div>
+
+    <div class="field">
+      <label for="phoneNumber">Phone number *</label>
+      <input id="phoneNumber" type="tel" required>
+    </div>
+
+    <div class="field">
+      <label for="emailAddress">Email *</label>
+      <input id="emailAddress" type="email" required>
+    </div>
+
+    <div class="field">
+      <label for="formPetType">Pet species *</label>
+      <select id="formPetType" required>
+        <option value="">Choose species</option>
+        <option>Dog</option>
+        <option>Cat</option>
+        <option>Bird</option>
+        <option>Rabbit</option>
+        <option>Fish</option>
+        <option>Turtle</option>
+        <option>Hamster</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="formPetName">Pet name *</label>
+      <input id="formPetName" required>
+    </div>
+
+    <div class="field">
+      <label for="formPetAge">Pet age *</label>
+      <input id="formPetAge" required>
+    </div>
+
+    <div class="field full">
+      <label for="residentialAddress">Residential address *</label>
+      <textarea id="residentialAddress" required></textarea>
+    </div>
+
+    <div class="field">
+      <label for="homeType">Home type *</label>
+      <select id="homeType" required>
+        <option value="">Choose</option>
+        <option>Independent house</option>
+        <option>Apartment</option>
+        <option>Rented home with permission</option>
+        <option>Farm / acreage</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="primaryCaretaker">Primary caretaker *</label>
+      <input id="primaryCaretaker" required>
+    </div>
+
+    <div class="field full">
+      <label for="previousExperience">Previous pet experience *</label>
+      <textarea id="previousExperience" required></textarea>
+    </div>
+
+    <div class="field full">
+      <label for="reasonForAdoption">Why do you want to adopt? *</label>
+      <textarea id="reasonForAdoption" required></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Digital signature *</label>
+      <canvas id="sigCanvas" width="900" height="150"></canvas>
+      <div class="inline-actions">
+        <button class="btn btn-secondary" id="clearSigBtn" type="button">Clear signature</button>
+        <span id="sigErr" class="small error-text"></span>
+      </div>
+    </div>
+
+    <label class="field full agreement">
+      <input id="termsAgreement" type="checkbox" required>
+      I confirm that these details are accurate and I will provide a safe, caring home.
+    </label>
+
+    <div class="field full">
+      <button class="btn btn-primary" type="submit">Submit adoption application</button>
+    </div>
+  </form>
+</section>
+
+<!-- OWNER DASHBOARD -->
+<section id="owner-area" class="container">
+  <div class="section-head">
+    <div>
+      <h2>🐾 Owner Dashboard</h2>
+      <p class="muted">Manage your pets and find loving homes for them.</p>
+    </div>
+    <span id="ownerStatus" class="status">Not signed in</span>
+  </div>
+
+  <div id="ownerLocked" class="notice">
+    Please log in or create an account as an <b>Owner / Giver</b> to access your dashboard.
+  </div>
+
+  <div id="ownerDashboard" class="hidden">
+
+    <!-- STATISTICS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span>🐶</span>
+        <h2 id="totalPets">0</h2>
+        <p>Total pets</p>
+      </div>
+      <div class="stat-card">
+        <span>🏡</span>
+        <h2 id="availablePets">0</h2>
+        <p>Available pets</p>
+      </div>
+      <div class="stat-card">
+        <span>📩</span>
+        <h2 id="pendingApplications">0</h2>
+        <p>Pending requests</p>
+      </div>
+      <div class="stat-card">
+        <span>❤️</span>
+        <h2 id="adoptedPets">0</h2>
+        <p>Adopted pets</p>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <!-- ADD PET FORM -->
+      <form id="petUploadForm" class="panel">
+        <h3>➕ Add a New Pet</h3>
+        <p class="muted small">Upload your animal's photo and complete its information.</p>
+
+        <div class="field full upload-area">
+          <label for="petImage">Upload Pet Photo *</label>
+          <input id="petImage" type="file" accept="image/*" required>
+          <img id="imagePreview" class="pet-preview hidden" alt="Pet photo preview">
+          <small class="muted">Supported: JPG, PNG, WEBP. Maximum 700 KB.</small>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="newPetName">Pet Name *</label>
+            <input id="newPetName" required maxlength="40">
+          </div>
+
+          <div class="field">
+            <label for="newPetSpecies">Species *</label>
+            <select id="newPetSpecies" required>
+              <option value="">Choose</option>
+              <option>Dogs</option>
+              <option>Cats</option>
+              <option>Birds</option>
+              <option>Rabbits</option>
+              <option>Fishes</option>
+              <option>Turtles</option>
+              <option>Hamsters</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="newPetBreed">Breed *</label>
+            <input id="newPetBreed" required>
+          </div>
+
+          <div class="field">
+            <label for="newPetAge">Age *</label>
+            <input id="newPetAge" required placeholder="e.g. 1 year">
+          </div>
+
+          <div class="field">
+            <label for="newPetGender">Gender *</label>
+            <select id="newPetGender" required>
+              <option value="">Choose</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="newPetPrice">Expected Fee (₹) *</label>
+            <input id="newPetPrice" type="number" min="0" required>
+          </div>
+
+          <div class="field full">
+            <label for="newPetLocation">Location *</label>
+            <input id="newPetLocation" placeholder="City / Area" required>
+          </div>
+
+          <div class="field full">
+            <label for="newPetTraits">Traits (comma separated)</label>
+            <input id="newPetTraits" placeholder="Friendly, playful, active">
+          </div>
+
+          <div class="field full">
+            <label for="newPetDescription">Description *</label>
+            <textarea id="newPetDescription" required></textarea>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <h3>🩺 Pet Health Checklist</h3>
+        <p class="muted small">Select the completed health care activities.</p>
+
+        <div class="health-checklist">
+          <label><input type="checkbox" id="healthVaccinated"> Vaccination completed</label>
+          <label><input type="checkbox" id="healthDewormed"> Deworming completed</label>
+          <label><input type="checkbox" id="healthCheckup"> Health checkup completed</label>
+          <label><input type="checkbox" id="healthGroomed"> Grooming completed</label>
+          <label><input type="checkbox" id="healthSterilized"> Sterilization completed</label>
+        </div>
+
+        <button class="btn btn-primary full-button" type="submit">
+          🐾 Publish Pet
+        </button>
+        <button class="btn btn-secondary full-button hidden" id="cancelEditBtn" type="button">
+          Cancel Editing
+        </button>
+      </form>
+
+      <!-- MY PETS -->
+      <div class="panel">
+        <h3>🐕 My Pet Listings</h3>
+        <p class="muted small">View and manage your uploaded pets.</p>
+        <div id="myPetsList" class="listing-container">
+          No listings yet.
+        </div>
+
+        <hr class="divider">
+
+        <h3>📩 Adoption Requests</h3>
+        <p class="muted small">Review people who want to adopt your pets.</p>
+        <div id="ownerApplications">
+          <p class="muted small">No applications yet.</p>
+        </div>
+
+        <hr class="divider">
+
+        <h3>💰 Price Offers Received</h3>
+        <div id="ownerOffers">
+          <p class="muted small">No offers yet.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CHAT -->
+<section id="chats" class="container">
+  <h2>Chat & Price Negotiation</h2>
+  <p class="muted">Connect with owners and adopters.</p>
+
+  <div id="chatLocked" class="notice">
+    Log in to start or manage conversations.
+  </div>
+
+  <div id="chatPanel" class="panel hidden">
+    <div class="chat-layout">
+      <div class="chat-list">
+        <h3>Conversations</h3>
+        <div id="conversationList" class="small muted">No conversations yet.</div>
+      </div>
+
+      <div class="chat-thread">
+        <div id="activeChatTitle"><b>Select a conversation</b></div>
+        <div id="messages" class="messages">
+          <p class="empty">Your messages will appear here.</p>
+        </div>
+
+        <form id="messageForm" class="chat-compose">
+          <input id="messageInput" placeholder="Write a message..." maxlength="500" autocomplete="off">
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+
+        <hr class="divider">
+
+        <form id="offerForm" class="chat-compose">
+          <input id="offerAmount" type="number" min="1" placeholder="Your offer in ₹">
+          <button class="btn btn-warm" type="submit">Send price offer</button>
+        </form>
+        <div id="chatOffers"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" class="container">
+  <h2>How PawHaven Works</h2>
+  <div class="grid-2">
+    <div class="panel"><b>1. Owners list pets</b><p class="muted small">Upload a photo and pet details.</p></div>
+    <div class="panel"><b>2. Adopters connect</b><p class="muted small">Ask questions through chat.</p></div>
+    <div class="panel"><b>3. Discuss the fee</b><p class="muted small">Adopters send offers; owners respond.</p></div>
+    <div class="panel"><b>4. Arrange adoption safely</b><p class="muted small">Meet in person and verify health records.</p></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  © <span id="currentYear"></span> PawHaven India · Give every pet a loving home.
+</footer>
+
+<!-- ACCOUNT MODAL -->
+<div id="accountModal" class="modal">
+  <div class="modal-box">
+    <button class="modal-close" data-close="accountModal" type="button">×</button>
+    <h2>Welcome to PawHaven</h2>
+    <p class="muted small">Create an account or log in to continue.</p>
+
+    <div class="tabs">
+      <button id="loginTab" class="btn btn-secondary active" type="button">Login</button>
+      <button id="signupTab" class="btn btn-secondary" type="button">Sign up</button>
+    </div>
+
+    <form id="accountForm">
+      <p id="accountMessage" class="error-text small"></p>
+
+      <div id="nameField" class="field hidden">
+        <label for="accountName">Full Name</label>
+        <input id="accountName" maxlength="60">
+      </div>
+
+      <div class="field">
+        <label for="accountEmail">Email</label>
+        <input id="accountEmail" type="email" required>
+      </div>
+
+      <div class="field">
+        <label for="accountPassword">Password</label>
+        <input id="accountPassword" type="password" minlength="4" required>
+      </div>
+
+      <div id="roleField" class="field hidden">
+        <label for="accountRole">I am a</label>
+        <select id="accountRole">
+          <option value="adopter">Adopter</option>
+          <option value="owner">Owner / Giver</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary full-button" id="accountSubmit" type="submit">Login</button>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
